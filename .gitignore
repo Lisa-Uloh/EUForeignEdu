@@ -4,3 +4,4 @@ dist/
 .env
 *.log
 firebase-debug.log
+.env
