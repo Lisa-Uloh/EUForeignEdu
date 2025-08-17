@@ -1,47 +1,46 @@
- # <-- replace with your Project ID
-name: Build & Deploy to Firebase Hosting
+name: Build & Deploy (Firebase Hosting + Functions)
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches: [ main ]         # ← change if your default branch is different
+  workflow_dispatch:
 
 jobs:
-  build_and_deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+    env:
+      PROJECT_ID: eufes-c2567   # ← your Firebase/GCP project id
 
-      - name: Use Node.js
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Install deps
+      - name: Install root deps
         run: npm ci
 
-      # Write Vite env file from repo secrets
-      - name: Create .env for Vite
-        run: |
-          cat > .env << 'EOF'
-          VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_MEASUREMENT_ID=${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
-          VITE_FIREBASE_RECAPTCHA_SITE_KEY=${{ secrets.VITE_FIREBASE_RECAPTCHA_SITE_KEY }}
-          EOF
-
-      - name: Build
+      - name: Build web app
         run: npm run build
+        # For Vite this runs "vite build" and outputs to "dist"
 
-      - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      # If you have Cloud Functions, install their deps too
+      - name: Install functions deps (if present)
+        if: hashFiles('functions/package.json') != ''
+        run: |
+          cd functions
+          npm ci
+          cd -
+
+      # Deploy Hosting + Functions with your service account JSON
+      - name: Deploy to Firebase (hosting + functions)
+        uses: w9jds/firebase-action@v2.2.0
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: eufes-c2567  # <-- or your exact Firebase Project ID
+          args: deploy --project ${{ env.PROJECT_ID }} --only hosting,functions
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EUFES_C2567 }}
