@@ -10,6 +10,7 @@ const SHEET_WEBHOOK = import.meta.env.VITE_SHEET_WEBHOOK as string; // <-- NEW
 const GUIDE_URL = "/study_abroad_guide.pdf"; // file in /public
 const HERO_VIDEO_URL = import.meta.env.VITE_HERO_VIDEO_URL;
 const MAIN_SITE_URL = import.meta.env.VITE_MAIN_SITE_URL || "/";
+import logo from "/src/assets/2.png";
 
 /** -------------------- Lead Magnet -------------------- */
 const LeadMagnet: React.FC = () => {
@@ -209,7 +210,7 @@ const Hero: React.FC = () => (
   <header className="relative w-full overflow-hidden bg-gradient-to-b from-indigo-50 to-white">
     <div className="mx-auto max-w-6xl px-4 py-6 flex items-center justify-between">
       {/* Logo left */}
-      <img src="/src/assets/2.png" alt="EUFES Logo" className="h-10 w-auto" />
+      <img src={logo} alt="EUFES Logo" className="h-10 w-auto" />
       {/* Optional CTA top-right */}
       <a
         href={CALENDLY_URL}
