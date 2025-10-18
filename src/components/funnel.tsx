@@ -8,7 +8,7 @@ const CALENDLY_URL =
   import.meta.env.VITE_CALENDLY_URL || "https://calendly.com/edidiong-uloh/30min";
 const SHEET_WEBHOOK = import.meta.env.VITE_SHEET_WEBHOOK as string; // <-- NEW
 const GUIDE_URL = "/study_abroad_guide.pdf"; // file in /public
-
+const HERO_VIDEO_URL = import.meta.env.VITE_HERO_VIDEO_URL;
 const MAIN_SITE_URL = import.meta.env.VITE_MAIN_SITE_URL || "/";
 
 /** -------------------- Lead Magnet -------------------- */
@@ -251,14 +251,16 @@ const Hero: React.FC = () => (
       <div className="order-first md:order-last">
         <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
           <div className="flex h-full w-full items-center justify-center text-gray-400">
-            <video
-              className="h-full w-full object-cover"
-              src="/hero.mp4"          // because the file is /public/hero.mp4
-              controls
-              playsInline
-              preload="metadata"
-              // poster="/hero-education.jpg"  // optional: nice thumbnail from /public
-            />
+        
+          <video
+            className="h-full w-full object-cover rounded-2xl"
+            src={HERO_VIDEO_URL}
+            controls
+            playsInline
+            preload="metadata"
+            poster="/hero-thumbnail.jpg" // Optional: a preview image from /public folder
+          />
+
           </div>
         </div>
       </div>
